@@ -21,7 +21,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 // 2. Signup
 export const createUser = async (req: Request, res: Response) => {
     try {
-        const {name, email, password} = req.body;
+        const {name, email, password, role} = req.body;
 
         const isExists = await User.findOne({where: {email}});
         if (isExists) {
@@ -29,9 +29,14 @@ export const createUser = async (req: Request, res: Response) => {
         } else {
             const hashedPassword = await bcrypt.hash(password, 10);
 
-            const newUser = await User.create({name, email, password: hashedPassword});
+            const newUser = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+                role: role || 'user'
+            });
 
-            res.status(201).json({id: newUser.id, name: newUser.name, email: newUser.email});
+            res.status(201).json({id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role});
         }
     } catch (error: any) {
         res.status(500).json({error: error.message});
@@ -52,9 +57,21 @@ export const checkUser = async (req: Request, res: Response) => {
             if (!isMatch) {
                 res.status(401).json({error: 'Invalid credentials'});
             } else {
-                const token = jwt.sign({id: user.id, name: user.name, email: user.email}, JWT_SECRET_KEY, {expiresIn: '1h'});
+                const token = jwt.sign({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role
+                }, JWT_SECRET_KEY, {
+                    expiresIn: '12h'
+                });
 
-                res.status(200).json({id: user.id, name: user.name, email: user.email, token});
+                res.status(200).json({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    token
+                });
             }
         }
     } catch (error: any) {

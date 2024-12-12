@@ -1,12 +1,16 @@
 import sequelize from './database';
-import User from '../models/User';
+import {initModels} from '../models';
 
 const syncDatabase = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connected!');
-        await sequelize.sync({ force: false }); // Sử dụng { force: true } chỉ khi muốn reset bảng.
-        console.log('Models synchronized!');
+
+        initModels(sequelize);
+
+        const isDevelopment = process.env.NODE_ENV === 'development' || true;
+        await sequelize.sync({force: isDevelopment});     // force: true -> dev, alter: true -> prd
+        console.log(`Models synchronized${isDevelopment ? ' with force' : ''}!`);
     } catch (error) {
         console.error('Error syncing database:', error);
     }

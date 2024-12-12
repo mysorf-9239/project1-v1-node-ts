@@ -6,7 +6,7 @@ import {
     checkUser,
     updatePassword,
     updateName
-} from '../controller/userController';
+} from '../controller/user.controller';
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/user.routes';
 
 
 const app: Application = express();
