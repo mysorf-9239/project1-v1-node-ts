@@ -1,17 +1,18 @@
-import { Router } from 'express';
-import verifyToken from '../middleware/verifyToken';
+import {Router} from 'express';
+import {authMiddleware} from "../middleware/auth";
 import {
     getAllUsers,
     createUser,
     checkUser,
     updatePassword,
-    updateName
+    updateName,
+    checkDeviceId
 } from '../controller/user.controller';
 
 const router = Router();
 
 // 1. Lấy tất cả user
-router.get('/', verifyToken, getAllUsers);
+router.get('/', authMiddleware, getAllUsers);
 
 // 2. Đăng ký
 router.post('/signup', createUser);
@@ -20,9 +21,12 @@ router.post('/signup', createUser);
 router.post('/login', checkUser);
 
 // 4. Đổi mật khẩu
-router.put('/password', verifyToken, updatePassword);
+router.put('/password', authMiddleware, updatePassword);
 
 // 5. Đổi tên
-router.put('/name', verifyToken, updateName);
+router.put('/name', authMiddleware, updateName);
+
+// 6. Check device_id
+router.put('/name', authMiddleware, checkDeviceId);
 
 export default router;

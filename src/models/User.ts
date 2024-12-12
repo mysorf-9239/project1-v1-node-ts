@@ -68,6 +68,7 @@ User.init(
         device_id: {
             type: DataTypes.UUID,
             allowNull: true,
+            unique: true,
         },
         created_at: {
             type: DataTypes.DATE,

@@ -8,7 +8,7 @@ const syncDatabase = async () => {
 
         initModels(sequelize);
 
-        const isDevelopment = process.env.NODE_ENV === 'development' || true;
+        const isDevelopment = process.env.NODE_ENV === 'development' || false;
         await sequelize.sync({force: isDevelopment});     // force: true -> dev, alter: true -> prd
         console.log(`Models synchronized${isDevelopment ? ' with force' : ''}!`);
     } catch (error) {
