@@ -1,18 +1,21 @@
-import {Model, DataTypes} from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database';
+import Bill from './Bill';
+import Product from './Product';
 
-class MenuProducts extends Model {
-    public menu_id!: number;
+class BillProducts extends Model {
+    public bill_id!: number;
     public product_id!: number;
+    public quantity!: number;
 }
 
-MenuProducts.init(
+BillProducts.init(
     {
-        menu_id: {
+        bill_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'menus',
+                model: Bill,
                 key: 'id',
             },
             onDelete: 'CASCADE',
@@ -21,20 +24,26 @@ MenuProducts.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'products',
+                model: Product,
                 key: 'id',
             },
             onDelete: 'CASCADE',
         },
+        quantity: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            validate: {
+                min: 1,
+            },
+        },
     },
     {
         sequelize,
-        modelName: 'MenuProducts',
-        tableName: 'menu_products',
+        modelName: 'BillProducts',
+        tableName: 'bill_products',
         timestamps: false,
         underscored: true,
-        paranoid: true,
     }
 );
 
-export default MenuProducts;
+export default BillProducts;
