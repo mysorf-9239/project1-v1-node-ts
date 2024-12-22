@@ -4,9 +4,19 @@ import User from '../models/User';
 import Product from '../models/Product';
 import BillProducts from '../models/BillProducts';
 
+const middleware = (req: Request, res: Response) => {
+    const role = req.user?.role;
+    if (role !== 'admin') {
+        res.status(403).json({ message: 'Forbidden.' });
+        return;
+    }
+}
+
 // 1. **Lấy tất cả hóa đơn**
 export const getAllBills = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const bills = await Bill.findAll({
             include: [
                 { model: User, attributes: ['id', 'name', 'email'] },
@@ -23,6 +33,8 @@ export const getAllBills = async (req: Request, res: Response) => {
 // 2. **Lấy tất cả hóa đơn của userId cụ thể**
 export const getBillsByUserId = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { userId } = req.params;
 
         const user = await User.findByPk(userId);
@@ -46,6 +58,8 @@ export const getBillsByUserId = async (req: Request, res: Response) => {
 // 3. **Lấy tất cả hóa đơn của deviceId, userId cụ thể**
 export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { userId, deviceId } = req.params;
 
         const user = await User.findByPk(userId);
@@ -72,6 +86,8 @@ export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) =
 // 4. **Lấy hóa đơn cụ thể theo billId**
 export const getBillById = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { billId } = req.params;
 
         const bill = await Bill.findByPk(billId, {
@@ -96,6 +112,8 @@ export const getBillById = async (req: Request, res: Response) => {
 // 5. **Tạo hóa đơn mới**
 export const createBill = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { userId, device_id, products } = req.body;
 
         const user = await User.findByPk(userId);
@@ -138,6 +156,8 @@ export const createBill = async (req: Request, res: Response) => {
 // 6. **Xóa hóa đơn**
 export const deleteBill = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { billId } = req.params;
 
         const bill = await Bill.findByPk(billId);

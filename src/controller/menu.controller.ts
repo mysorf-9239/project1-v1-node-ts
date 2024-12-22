@@ -2,9 +2,19 @@ import { Request, Response } from "express";
 import Menu from "../models/Menu";
 import Product from "../models/Product";
 
+const middleware = (req: Request, res: Response) => {
+    const role = req.user?.role;
+    if (role !== 'admin') {
+        res.status(403).json({ message: 'Forbidden.' });
+        return;
+    }
+}
+
 // 1. **Lấy tất cả menu**
 export const getAllMenus = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const menus = await Menu.findAll({ include: { model: Product, as: 'products' } });
         res.status(200).json(menus);
     } catch (error) {
@@ -16,6 +26,8 @@ export const getAllMenus = async (req: Request, res: Response) => {
 // 2. **Lấy một menu cụ thể**
 export const getMenuById = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { menuId } = req.params;
 
         const menu = await Menu.findByPk(menuId, { include: { model: Product, as: 'products' } });
@@ -34,6 +46,8 @@ export const getMenuById = async (req: Request, res: Response) => {
 // 3. **Tạo menu mới**
 export const createMenu = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { name, description } = req.body;
 
         if (!name) {
@@ -52,6 +66,8 @@ export const createMenu = async (req: Request, res: Response) => {
 // 4. **Thêm sản phẩm vào menu**
 export const addProductsToMenu = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { menuId } = req.params;
         const { productIds } = req.body;
 
@@ -78,6 +94,8 @@ export const addProductsToMenu = async (req: Request, res: Response) => {
 // 5. **Chỉnh sửa menu**
 export const updateMenu = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { menuId } = req.params;
         const { name, description } = req.body;
 
@@ -101,6 +119,8 @@ export const updateMenu = async (req: Request, res: Response) => {
 // 6. **Xoá sản phẩm khỏi menu**
 export const removeProductFromMenu = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { menuId, productId } = req.params;
 
         const menu = await Menu.findByPk(menuId);
@@ -126,6 +146,8 @@ export const removeProductFromMenu = async (req: Request, res: Response) => {
 // 7. **Xoá menu**
 export const deleteMenu = async (req: Request, res: Response) => {
     try {
+        middleware(req, res);
+
         const { menuId } = req.params;
 
         const menu = await Menu.findByPk(menuId);

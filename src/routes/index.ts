@@ -1,4 +1,6 @@
-import { Router } from 'express';
+import {Router} from 'express';
+import {authMiddleware} from "../middleware/auth";
+
 import userRoutes from './user.routes';
 import menuRoutes from "./menu.routes";
 import productRoutes from "./product.routes";
@@ -6,9 +8,12 @@ import billRoutes from './bill.routes';
 
 const router = Router();
 
-router.use('/menus', menuRoutes);
-router.use('/products', productRoutes);
 router.use('/users', userRoutes);
-router.use('/bills', billRoutes);
+
+router.use('/menus', authMiddleware, menuRoutes);
+
+router.use('/products', authMiddleware, productRoutes);
+
+router.use('/bills', authMiddleware, billRoutes);
 
 export default router;

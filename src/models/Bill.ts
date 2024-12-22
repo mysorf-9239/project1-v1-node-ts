@@ -33,14 +33,6 @@ class Bill extends Model<BillAttributes, BillCreationAttributes> implements Bill
     }
 }
 
-Bill.beforeCreate(async (bill) => {
-    bill.amount = await bill.calculateAmount();
-});
-
-Bill.beforeUpdate(async (bill) => {
-    bill.amount = await bill.calculateAmount();
-});
-
 Bill.init(
     {
         id: {
