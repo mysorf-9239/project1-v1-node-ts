@@ -1,8 +1,6 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import sequelize from '../config/database';
 import User from './User';
-import Product from './Product';
-import BillProducts from './BillProducts';
 
 interface BillAttributes {
     id: number;
@@ -22,15 +20,6 @@ class Bill extends Model<BillAttributes, BillCreationAttributes> implements Bill
     public amount!: number;
     public created_at!: Date;
     public updated_at!: Date;
-
-    public async calculateAmount(): Promise<number> {
-        const billProducts = await BillProducts.findAll({ where: { bill_id: this.id }, include: [Product] });
-
-        return billProducts.reduce((total, bp: any) => {
-            const productPrice = bp.Product?.price || 0;
-            return total + productPrice * bp.quantity;
-        }, 0);
-    }
 }
 
 Bill.init(

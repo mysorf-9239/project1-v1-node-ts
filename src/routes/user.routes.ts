@@ -27,6 +27,6 @@ router.put('/password', authMiddleware, updatePassword);
 router.put('/name', authMiddleware, updateName);
 
 // 6. Check device_id
-router.put('/name', authMiddleware, checkDeviceId);
+router.put('/device', authMiddleware, checkDeviceId);
 
 export default router;

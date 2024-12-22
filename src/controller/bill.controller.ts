@@ -8,14 +8,17 @@ const middleware = (req: Request, res: Response) => {
     const role = req.user?.role;
     if (role !== 'admin') {
         res.status(403).json({ message: 'Forbidden.' });
-        return;
+        return true;
     }
-}
+    return false;
+};
 
 // 1. **Lấy tất cả hóa đơn**
 export const getAllBills = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const bills = await Bill.findAll({
             include: [
@@ -33,9 +36,11 @@ export const getAllBills = async (req: Request, res: Response) => {
 // 2. **Lấy tất cả hóa đơn của userId cụ thể**
 export const getBillsByUserId = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
-        const { userId } = req.params;
+        const userId = req.user?.id;
 
         const user = await User.findByPk(userId);
         if (!user) {
@@ -58,9 +63,12 @@ export const getBillsByUserId = async (req: Request, res: Response) => {
 // 3. **Lấy tất cả hóa đơn của deviceId, userId cụ thể**
 export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
-        const { userId, deviceId } = req.params;
+        const userId = req.user?.id;
+        const { deviceId } = req.params;
 
         const user = await User.findByPk(userId);
         if (!user) {
@@ -86,7 +94,9 @@ export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) =
 // 4. **Lấy hóa đơn cụ thể theo billId**
 export const getBillById = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { billId } = req.params;
 
@@ -112,9 +122,17 @@ export const getBillById = async (req: Request, res: Response) => {
 // 5. **Tạo hóa đơn mới**
 export const createBill = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
-        const { userId, device_id, products } = req.body;
+        const userId = req.user?.id;
+        if (userId === undefined) {
+            res.status(400).json({ message: 'ID người dùng không hợp lệ' });
+            return;
+        }
+
+        const { device_id, products } = req.body;
 
         const user = await User.findByPk(userId);
         if (!user) {
@@ -123,26 +141,39 @@ export const createBill = async (req: Request, res: Response) => {
         }
 
         const newBill = await Bill.create({
-            user_id: userId,
+            user_id: Number(userId),
             device_id,
             amount: 0,
         });
 
-        const billProductsData = products.map((product: any) => ({
-            bill_id: newBill.id,
-            product_id: product.productId,
-            quantity: product.quantity,
-        }));
+        const billProducts = [];
+        let totalAmount: number = 0;
 
-        await BillProducts.bulkCreate(billProductsData);
+        for (let product of products) {
+            const productFound = await Product.findByPk(product.product_id);
+            if (!productFound) {
+                res.status(400).json({ message: `Sản phẩm với ID ${product.product_id} không tồn tại` });
+                return;
+            }
 
-        newBill.amount = await newBill.calculateAmount();
+            totalAmount += productFound.price * product.quantity;
+
+            billProducts.push({
+                bill_id: newBill.id,
+                product_id: product.product_id,
+                quantity: product.quantity,
+            });
+        }
+
+        await BillProducts.bulkCreate(billProducts);
+
+        newBill.amount = totalAmount;
         await newBill.save();
 
         const createdBill = await Bill.findByPk(newBill.id, {
             include: [
-                { model: User, attributes: ['id', 'name', 'email'] },
-                { model: Product, through: { attributes: ['quantity'] } },
+                { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+                { model: Product, as: 'products', through: { attributes: ['quantity'] } },
             ],
         });
 
@@ -156,7 +187,9 @@ export const createBill = async (req: Request, res: Response) => {
 // 6. **Xóa hóa đơn**
 export const deleteBill = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { billId } = req.params;
 

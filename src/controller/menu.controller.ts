@@ -6,14 +6,17 @@ const middleware = (req: Request, res: Response) => {
     const role = req.user?.role;
     if (role !== 'admin') {
         res.status(403).json({ message: 'Forbidden.' });
-        return;
+        return true;
     }
-}
+    return false;
+};
 
 // 1. **Lấy tất cả menu**
 export const getAllMenus = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const menus = await Menu.findAll({ include: { model: Product, as: 'products' } });
         res.status(200).json(menus);
@@ -26,7 +29,9 @@ export const getAllMenus = async (req: Request, res: Response) => {
 // 2. **Lấy một menu cụ thể**
 export const getMenuById = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { menuId } = req.params;
 
@@ -46,7 +51,9 @@ export const getMenuById = async (req: Request, res: Response) => {
 // 3. **Tạo menu mới**
 export const createMenu = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { name, description } = req.body;
 
@@ -66,7 +73,9 @@ export const createMenu = async (req: Request, res: Response) => {
 // 4. **Thêm sản phẩm vào menu**
 export const addProductsToMenu = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { menuId } = req.params;
         const { productIds } = req.body;
@@ -94,7 +103,9 @@ export const addProductsToMenu = async (req: Request, res: Response) => {
 // 5. **Chỉnh sửa menu**
 export const updateMenu = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { menuId } = req.params;
         const { name, description } = req.body;
@@ -119,7 +130,9 @@ export const updateMenu = async (req: Request, res: Response) => {
 // 6. **Xoá sản phẩm khỏi menu**
 export const removeProductFromMenu = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { menuId, productId } = req.params;
 
@@ -146,7 +159,9 @@ export const removeProductFromMenu = async (req: Request, res: Response) => {
 // 7. **Xoá menu**
 export const deleteMenu = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { menuId } = req.params;
 

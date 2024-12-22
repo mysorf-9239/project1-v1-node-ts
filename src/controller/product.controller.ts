@@ -5,14 +5,17 @@ const middleware = (req: Request, res: Response) => {
     const role = req.user?.role;
     if (role !== 'admin') {
         res.status(403).json({ message: 'Forbidden.' });
-        return;
+        return true;
     }
-}
+    return false;
+};
 
 // 1. **Lấy tất cả sản phẩm**
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const products = await Product.findAll();
         res.status(200).json(products);
@@ -25,7 +28,9 @@ export const getAllProducts = async (req: Request, res: Response) => {
 // 2. **Lấy một sản phẩm cụ thể**
 export const getProductById = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { productId } = req.params;
 
@@ -45,7 +50,9 @@ export const getProductById = async (req: Request, res: Response) => {
 // 3. **Tạo sản phẩm mới**
 export const createProduct = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { name, description, price } = req.body;
 
@@ -65,7 +72,9 @@ export const createProduct = async (req: Request, res: Response) => {
 // 4. **Chỉnh sửa sản phẩm**
 export const updateProduct = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { productId } = req.params;
         const { name, description, price } = req.body;
@@ -91,7 +100,9 @@ export const updateProduct = async (req: Request, res: Response) => {
 // 5. **Xoá sản phẩm**
 export const deleteProduct = async (req: Request, res: Response) => {
     try {
-        middleware(req, res);
+        if (middleware(req, res)) {
+            return;
+        }
 
         const { productId } = req.params;
 

@@ -14,10 +14,10 @@ const router = Router();
 router.get('/', getAllBills);
 
 // 2. **Lấy tất cả hóa đơn của userId cụ thể**
-router.get('/user/:userId', getBillsByUserId);
+router.get('/user', getBillsByUserId);
 
 // 3. **Lấy tất cả hóa đơn của deviceId, userId cụ thể**
-router.get('/user/:userId/device/:deviceId', getBillsByUserIdAndDeviceId);
+router.get('/device/:deviceId', getBillsByUserIdAndDeviceId);
 
 // 4. **Lấy hóa đơn cụ thể theo billId**
 router.get('/:billId', getBillById);

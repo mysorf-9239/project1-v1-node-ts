@@ -1,7 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '../config/database';
-import Bill from './Bill';
-import Product from './Product';
 
 class BillProducts extends Model {
     public bill_id!: number;
@@ -15,7 +13,7 @@ BillProducts.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: Bill,
+                model: 'bills',
                 key: 'id',
             },
             onDelete: 'CASCADE',
@@ -24,7 +22,7 @@ BillProducts.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: Product,
+                model: 'products',
                 key: 'id',
             },
             onDelete: 'CASCADE',
