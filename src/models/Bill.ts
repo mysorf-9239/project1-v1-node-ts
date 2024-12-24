@@ -7,19 +7,15 @@ interface BillAttributes {
     user_id: number;
     device_id: string | null;
     amount: number;
-    created_at: Date;
-    updated_at: Date;
 }
 
-interface BillCreationAttributes extends Optional<BillAttributes, 'id' | 'created_at' | 'updated_at'> {}
+interface BillCreationAttributes extends Optional<BillAttributes, 'id'> {}
 
 class Bill extends Model<BillAttributes, BillCreationAttributes> implements BillAttributes {
     public id!: number;
     public user_id!: number;
     public device_id!: string | null;
     public amount!: number;
-    public created_at!: Date;
-    public updated_at!: Date;
 }
 
 Bill.init(
@@ -53,16 +49,6 @@ Bill.init(
                 isFloat: true,
                 min: 0,
             },
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
         },
     },
     {

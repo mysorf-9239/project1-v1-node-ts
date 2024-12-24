@@ -8,11 +8,9 @@ interface UserAttributes {
     password: string;
     role: 'user' | 'admin';
     device_id: string | null;
-    created_at: Date;
-    updated_at: Date;
 }
 
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'created_at' | 'updated_at'> {
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {
 }
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
@@ -22,8 +20,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     public password!: string;
     public role!: 'user' | 'admin';
     public device_id!: string | null;
-    public created_at!: Date;
-    public updated_at!: Date;
 }
 
 User.init(
@@ -69,16 +65,6 @@ User.init(
             type: DataTypes.UUID,
             allowNull: true,
             unique: true,
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
         },
     },
     {

@@ -5,21 +5,19 @@ interface ProductAttributes {
     id: number;
     name: string;
     description: string;
+    image: string;
     price: number;
-    created_at: Date;
-    updated_at: Date;
 }
 
-interface ProductCreationAttributes extends Optional<ProductAttributes, 'id' | 'created_at' | 'updated_at'> {
+interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> {
 }
 
 class Product extends Model<ProductAttributes, ProductCreationAttributes> implements ProductAttributes {
     public id!: number;
     public name!: string;
     public description!: string;
+    public image!: string;
     public price!: number;
-    public created_at!: Date;
-    public updated_at!: Date;
 }
 
 Product.init(
@@ -40,6 +38,10 @@ Product.init(
             type: DataTypes.STRING,
             allowNull: true,
         },
+        image: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
         price: {
             type: DataTypes.FLOAT,
             allowNull: false,
@@ -48,16 +50,6 @@ Product.init(
                 min: 0,
                 notEmpty: {msg: 'Price cannot be empty'},
             },
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
         },
     },
     {

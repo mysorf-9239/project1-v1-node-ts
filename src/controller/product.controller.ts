@@ -54,14 +54,36 @@ export const createProduct = async (req: Request, res: Response) => {
             return;
         }
 
-        const { name, description, price } = req.body;
+        const { name, description, image, price } = req.body;
 
         if (!name || !price) {
             res.status(400).json({ message: "Tên và giá sản phẩm là bắt buộc" });
             return;
         }
 
-        const newProduct = await Product.create({ name, description, price });
+        if (image) {
+            const base64Regex = /^data:image\/(png|jpeg|jpg);base64,/;
+            if (!base64Regex.test(image)) {
+                res.status(400).json({ message: "Hình ảnh phải là chuỗi Base64 hợp lệ" });
+                return;
+            }
+
+            const imageSize = Buffer.byteLength(image, 'utf-8');
+            const maxSize = 2 * 1024 * 1024; // 2MB
+
+            if (imageSize > maxSize) {
+                res.status(400).json({ message: "Hình ảnh vượt quá kích thước tối đa 2MB" });
+                return;
+            }
+        }
+
+        const newProduct = await Product.create({
+            name,
+            description,
+            image: image || "#",
+            price
+        });
+
         res.status(201).json(newProduct);
     } catch (error) {
         console.error(error);

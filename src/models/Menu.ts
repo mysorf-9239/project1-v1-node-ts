@@ -5,19 +5,15 @@ interface MenuAttributes {
     id: number;
     name: string;
     description: string;
-    created_at: Date;
-    updated_at: Date;
 }
 
-interface MenuCreationAttributes extends Optional<MenuAttributes, 'id' | 'created_at' | 'updated_at'> {
+interface MenuCreationAttributes extends Optional<MenuAttributes, 'id'> {
 }
 
 class Menu extends Model<MenuAttributes, MenuCreationAttributes> implements MenuAttributes {
     public id!: number;
     public name!: string;
     public description!: string;
-    public created_at!: Date;
-    public updated_at!: Date;
 }
 
 Menu.init(
@@ -37,16 +33,6 @@ Menu.init(
         description: {
             type: DataTypes.STRING,
             allowNull: true,
-        },
-        created_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            defaultValue: DataTypes.NOW,
         },
     },
     {

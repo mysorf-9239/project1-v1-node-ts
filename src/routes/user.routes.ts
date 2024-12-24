@@ -15,7 +15,7 @@ const router = Router();
 router.get('/', authMiddleware, getAllUsers);
 
 // 2. Đăng ký
-router.post('/signup', createUser);
+router.post('/register', createUser);
 
 // 3. Đăng nhập
 router.post('/login', checkUser);
