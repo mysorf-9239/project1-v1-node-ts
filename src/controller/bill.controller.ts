@@ -22,13 +22,12 @@ export const getAllBills = async (req: Request, res: Response) => {
 
         const bills = await Bill.findAll({
             include: [
-                { model: User, attributes: ['id', 'name', 'email'] },
-                { model: Product, through: { attributes: ['quantity'] } },
+                { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+                { model: Product, as: 'products', through: { attributes: ['quantity'] } },
             ],
         });
         res.status(200).json(bills);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi lấy danh sách hóa đơn', error });
     }
 };
@@ -36,10 +35,6 @@ export const getAllBills = async (req: Request, res: Response) => {
 // 2. **Lấy tất cả hóa đơn của userId cụ thể**
 export const getBillsByUserId = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const userId = req.user?.id;
 
         const user = await User.findByPk(userId);
@@ -50,12 +45,11 @@ export const getBillsByUserId = async (req: Request, res: Response) => {
 
         const bills = await Bill.findAll({
             where: { user_id: userId },
-            include: [{ model: Product, through: { attributes: ['quantity'] } }],
+            include: [{ model: Product, as: 'products', through: { attributes: ['quantity'] } },],
         });
 
         res.status(200).json(bills);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi lấy hóa đơn của người dùng', error });
     }
 };
@@ -63,10 +57,6 @@ export const getBillsByUserId = async (req: Request, res: Response) => {
 // 3. **Lấy tất cả hóa đơn của deviceId, userId cụ thể**
 export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const userId = req.user?.id;
         const { deviceId } = req.params;
 
@@ -81,12 +71,11 @@ export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) =
                 user_id: userId,
                 device_id: deviceId,
             },
-            include: [{ model: Product, through: { attributes: ['quantity'] } }],
+            include: [{ model: Product, as: 'products', through: { attributes: ['quantity'] } },],
         });
 
         res.status(200).json(bills);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi lấy hóa đơn theo userId và deviceId', error });
     }
 };
@@ -94,16 +83,12 @@ export const getBillsByUserIdAndDeviceId = async (req: Request, res: Response) =
 // 4. **Lấy hóa đơn cụ thể theo billId**
 export const getBillById = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const { billId } = req.params;
 
         const bill = await Bill.findByPk(billId, {
             include: [
-                { model: User, attributes: ['id', 'name', 'email'] },
-                { model: Product, through: { attributes: ['quantity'] } },
+                { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
+                { model: Product, as: 'products', through: { attributes: ['quantity'] } },
             ],
         });
 
@@ -114,7 +99,6 @@ export const getBillById = async (req: Request, res: Response) => {
 
         res.status(200).json(bill);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi lấy hóa đơn', error });
     }
 };
@@ -122,10 +106,6 @@ export const getBillById = async (req: Request, res: Response) => {
 // 5. **Tạo hóa đơn mới**
 export const createBill = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const userId = req.user?.id;
         if (userId === undefined) {
             res.status(400).json({ message: 'ID người dùng không hợp lệ' });
@@ -179,7 +159,6 @@ export const createBill = async (req: Request, res: Response) => {
 
         res.status(201).json(createdBill);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi tạo hóa đơn', error });
     }
 };
@@ -202,7 +181,6 @@ export const deleteBill = async (req: Request, res: Response) => {
         await bill.destroy();
         res.status(200).json({ message: 'Xóa hóa đơn thành công' });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: 'Lỗi khi xóa hóa đơn', error });
     }
 };

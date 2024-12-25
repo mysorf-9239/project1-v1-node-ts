@@ -14,7 +14,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         res.status(200).json(users);
     } catch (error: any) {
 
-        res.status(500).json({error: error.message});
+        res.status(500).json({message: error.message});
     }
 };
 
@@ -25,7 +25,7 @@ export const createUser = async (req: Request, res: Response) => {
 
         const isExists = await User.findOne({where: {email}});
         if (isExists) {
-            res.status(400).json({error: 'Email is already in use'});
+            res.status(400).json({message: 'Email is already in use'});
             return;
         }
 
@@ -43,8 +43,7 @@ export const createUser = async (req: Request, res: Response) => {
             role: newUser.role,
         });
     } catch (error: any) {
-        console.error("Error creating user:", error.message);
-        res.status(500).json({error: error.message});
+        res.status(500).json({message: error.message});
     }
 };
 
@@ -54,21 +53,21 @@ export const checkUser = async (req: Request, res: Response) => {
         const {email, password} = req.body;
 
         if (!email || !password) {
-            res.status(400).json({error: "Email and password are required"});
+            res.status(400).json({message: "Email and password are required"});
             return;
         }
 
         const user = await User.findOne({where: {email}});
 
         if (!user) {
-            res.status(401).json({error: "Invalid email or password"});
+            res.status(401).json({message: "Invalid email or password"});
             return;
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            res.status(401).json({error: "Invalid email or password"});
+            res.status(401).json({message: "Invalid email or password"});
             return;
         }
 
@@ -97,8 +96,7 @@ export const checkUser = async (req: Request, res: Response) => {
             token,
         });
     } catch (error: any) {
-        console.error("Error during login:", error.message);
-        res.status(500).json({error: "Internal server error"});
+        res.status(500).json({message: "Internal server error"});
     }
 };
 
@@ -108,20 +106,20 @@ export const updatePassword = async (req: Request, res: Response) => {
         const {old_password, new_password} = req.body;
 
         if (!old_password || !new_password || new_password.length < 6) {
-            res.status(400).json({error: "Password is required and must be at least 6 characters long"});
+            res.status(400).json({message: "Password is required and must be at least 6 characters long"});
             return;
         }
 
         const user = await User.findOne({where: {email: req.user?.email}});
 
         if (!user) {
-            res.status(404).json({error: "User not found"});
+            res.status(404).json({message: "User not found"});
             return;
         }
 
         const isMatch = await bcrypt.compare(old_password, user.password);
         if (!isMatch) {
-            res.status(401).json({error: "Password is incorrect"});
+            res.status(401).json({message: "Password is incorrect"});
             return;
         }
 
@@ -130,8 +128,7 @@ export const updatePassword = async (req: Request, res: Response) => {
 
         res.json({message: "Password updated successfully"});
     } catch (error: any) {
-        console.error("Error in updatePassword:", error.message);
-        res.status(500).json({error: error.message});
+        res.status(500).json({message: error.message});
     }
 };
 
@@ -141,21 +138,21 @@ export const updateName = async (req: Request, res: Response) => {
         const {new_name} = req.body;
 
         if (!new_name || typeof new_name !== "string" || new_name.trim() === "") {
-            res.status(400).json({error: "New name is required and must be a valid string."});
+            res.status(400).json({message: "New name is required and must be a valid string."});
             return;
         }
 
         const userId = req.user?.id;
 
         if (!userId) {
-            res.status(401).json({error: "Unauthorized"});
+            res.status(401).json({message: "Unauthorized"});
             return;
         }
 
         const user = await User.findByPk(userId);
 
         if (!user) {
-            res.status(404).json({error: "User not found"});
+            res.status(404).json({message: "User not found"});
             return;
         }
 
@@ -164,8 +161,7 @@ export const updateName = async (req: Request, res: Response) => {
 
         res.status(200).json({message: "Name updated successfully", name: user.name});
     } catch (error: any) {
-        console.error("Error in changeName:", error.message);
-        res.status(500).json({error: error.message});
+        res.status(500).json({message: error.message});
     }
 };
 
@@ -175,37 +171,58 @@ export const checkDeviceId = async (req: Request, res: Response) => {
         const {device_id} = req.body;
 
         if (!device_id) {
-            res.status(400).json({error: "Device ID is required"});
+            res.status(400).json({message: "Device ID is required"});
             return;
         }
 
         const userId = req.user?.id;
 
         if (!userId) {
-            res.status(401).json({error: "Unauthorized"});
+            res.status(401).json({message: "Unauthorized"});
             return;
         }
 
         const existingDevice = await User.findOne({where: {device_id}});
 
         if (existingDevice) {
-            res.status(200).json({success: false, message: "Device ID already exists"});
+            res.status(200).json({success: false, device_id: existingDevice.device_id});
             return;
         }
 
         const user = await User.findByPk(userId);
 
         if (!user) {
-            res.status(404).json({error: "User not found"});
+            res.status(404).json({message: "User not found"});
             return;
         }
 
         user.device_id = device_id;
         await user.save();
 
-        res.status(200).json({success: true, message: "Device ID saved successfully"});
+        res.status(200).json({success: true});
     } catch (error: any) {
-        console.error("Error in checkDeviceId:", error.message);
-        res.status(500).json({error: error.message});
+        res.status(500).json({message: error.message});
+    }
+};
+
+// 7. Get user with id
+export const getUserWithId = async (req: Request, res: Response) => {
+    try {
+        const user_id = req.user?.id;
+        if (!user_id) {
+            res.status(400).json({ error: "User ID is required" });
+            return;
+        }
+
+        const user = await User.findByPk(user_id);
+
+        if (!user) {
+            res.status(404).json({ error: "User not found" });
+            return;
+        }
+
+        res.status(200).json({ name: user.name, email: user.email });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
     }
 };

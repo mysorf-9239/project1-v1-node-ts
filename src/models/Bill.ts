@@ -1,6 +1,5 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import sequelize from '../config/database';
-import User from './User';
 
 interface BillAttributes {
     id: number;
@@ -29,7 +28,7 @@ Bill.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: User,
+                model: 'users',
                 key: 'id',
             },
             onDelete: 'CASCADE',

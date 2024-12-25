@@ -13,14 +13,9 @@ const middleware = (req: Request, res: Response) => {
 // 1. **Lấy tất cả sản phẩm**
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const products = await Product.findAll();
         res.status(200).json(products);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi lấy danh sách sản phẩm", error });
     }
 };
@@ -28,10 +23,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
 // 2. **Lấy một sản phẩm cụ thể**
 export const getProductById = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const { productId } = req.params;
 
         const product = await Product.findByPk(productId);
@@ -42,7 +33,6 @@ export const getProductById = async (req: Request, res: Response) => {
 
         res.status(200).json(product);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi lấy sản phẩm", error });
     }
 };
@@ -86,7 +76,6 @@ export const createProduct = async (req: Request, res: Response) => {
 
         res.status(201).json(newProduct);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi tạo sản phẩm", error });
     }
 };
@@ -114,7 +103,6 @@ export const updateProduct = async (req: Request, res: Response) => {
         await product.save();
         res.status(200).json(product);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi chỉnh sửa sản phẩm", error });
     }
 };
@@ -137,7 +125,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
         await product.destroy();
         res.status(200).json({ message: "Xoá sản phẩm thành công" });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi xoá sản phẩm", error });
     }
 };

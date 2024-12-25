@@ -6,7 +6,7 @@ import {
     checkUser,
     updatePassword,
     updateName,
-    checkDeviceId
+    checkDeviceId, getUserWithId
 } from '../controller/user.controller';
 
 const router = Router();
@@ -28,5 +28,8 @@ router.put('/name', authMiddleware, updateName);
 
 // 6. Check device_id
 router.put('/device', authMiddleware, checkDeviceId);
+
+// 7. Get user with id
+router.get('/id', authMiddleware, getUserWithId);
 
 export default router;

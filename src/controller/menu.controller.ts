@@ -14,14 +14,9 @@ const middleware = (req: Request, res: Response) => {
 // 1. **Lấy tất cả menu**
 export const getAllMenus = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const menus = await Menu.findAll({ include: { model: Product, as: 'products' } });
         res.status(200).json(menus);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi lấy danh sách menu", error });
     }
 };
@@ -29,10 +24,6 @@ export const getAllMenus = async (req: Request, res: Response) => {
 // 2. **Lấy một menu cụ thể**
 export const getMenuById = async (req: Request, res: Response) => {
     try {
-        if (middleware(req, res)) {
-            return;
-        }
-
         const { menuId } = req.params;
 
         const menu = await Menu.findByPk(menuId, { include: { model: Product, as: 'products' } });
@@ -43,7 +34,6 @@ export const getMenuById = async (req: Request, res: Response) => {
 
         res.status(200).json(menu);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi lấy menu", error });
     }
 };
@@ -65,7 +55,6 @@ export const createMenu = async (req: Request, res: Response) => {
         const newMenu = await Menu.create({ name, description });
         res.status(201).json(newMenu);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi tạo menu", error });
     }
 };
@@ -92,10 +81,9 @@ export const addProductsToMenu = async (req: Request, res: Response) => {
             return;
         }
 
-        await (menu as any).addProducts(products); // Sequelize Many-to-Many method
+        await (menu as any).addProducts(products);
         res.status(200).json({ message: "Thêm sản phẩm vào menu thành công" });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi thêm sản phẩm vào menu", error });
     }
 };
@@ -122,7 +110,6 @@ export const updateMenu = async (req: Request, res: Response) => {
 
         res.status(200).json(menu);
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi chỉnh sửa menu", error });
     }
 };
@@ -151,7 +138,6 @@ export const removeProductFromMenu = async (req: Request, res: Response) => {
         await (menu as any).removeProduct(product);
         res.status(200).json({ message: "Xoá sản phẩm khỏi menu thành công" });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi xoá sản phẩm khỏi menu", error });
     }
 };
@@ -174,7 +160,6 @@ export const deleteMenu = async (req: Request, res: Response) => {
         await menu.destroy();
         res.status(200).json({ message: "Xoá menu thành công" });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ message: "Lỗi khi xoá menu", error });
     }
 };
