@@ -88,7 +88,7 @@ export const updateProduct = async (req: Request, res: Response) => {
         }
 
         const { productId } = req.params;
-        const { name, description, price } = req.body;
+        const { image, name, description, price } = req.body;
 
         const product = await Product.findByPk(productId);
         if (!product) {
@@ -96,6 +96,7 @@ export const updateProduct = async (req: Request, res: Response) => {
             return;
         }
 
+        product.image = image || product.image;
         product.name = name || product.name;
         product.description = description || product.description;
         product.price = price !== undefined ? price : product.price;
