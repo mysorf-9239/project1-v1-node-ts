@@ -72,7 +72,7 @@ export const checkUser = async (req: Request, res: Response) => {
         }
 
         const now = Math.floor(Date.now() / 1000);
-        const exp = now + 12 * 60 * 60;
+        const exp = now + 7 * 24 * 60 * 60;
         const token = jwt.sign(
             {
                 id: user.id,
